@@ -1,0 +1,17 @@
+.outer{
+    border: 3px solid black;
+    height: 200px;
+    width: 400px;
+    padding: 5px;
+    align-content: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    border-radius: 20px;
+    background-color: darkcyan;
+    
+}
+.topic{
+font-weight: 900;
+font-size: 20px;
+}

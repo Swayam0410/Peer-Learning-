@@ -1,11 +1,23 @@
 import './App.css'
 import App2 from './App2.jsx';
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Article from './components/Article.jsx';
 import DataContext from './components/Context/dataContext.jsx';
-import { useEffect, useState } from 'react';
 import Form from './components/Form.jsx';
+import { useEffect, useState } from 'react';
+
+import {
+  SignIn,
+  SignUp,
+  UserButton,
+  SignedIn,
+  SignedOut,
+  RedirectToSignIn,
+} from '@clerk/clerk-react';
+
+import { Routes, Route } from "react-router-dom";
+
 function App() {
+  
         let complete_data = [
   {
     id: "B522061",
@@ -88,25 +100,50 @@ function App() {
     description: "Bayes Theorem is a fundamental concept in probability theory that describes how to update the probability of a hypothesis based on new evidence. It is named after Thomas Bayes, who first formulated it. The theorem is expressed as P(A|B) = [P(B|A) * P(A)] / P(B), where P(A|B) is the posterior probability of event A given event B. Bayes Theorem is widely used in statistics, machine learning, medical diagnosis, and spam filtering. For instance, in a medical context, it helps calculate the probability that a patient has a disease given a positive test result. Understanding Bayes Theorem is crucial for working with probabilistic models and making informed decisions based on uncertain data. It forms the backbone of Bayesian inference, a powerful method in statistical modeling and machine learning."
   }
 ];
-  const [data,setData]=useState([]);
-  useEffect(()=>{
-    setData(complete_data);
-  },[]);
-return (
-  <DataContext.Provider value={[data,setData]}>
-    <Router>
-      <Routes>
-        <Route path='/article:id' element={<Article/>}/>
-        <Route path='/form' element={<Form/>}/>
-        <Route path="/" element={<App2/>}/>
-        
-      </Routes>
-    </Router>
+  const [data, setData] = useState([]);
 
-  </DataContext.Provider>
-    
-    
+  useEffect(() => {
+    setData(complete_data);
+  }, []);
+
+  return (
+    <DataContext.Provider value={[data, setData]}>
+      <div style={{ padding: '1rem' }}>
+        {/* Header Area with UserButton */}
+        <SignedIn>
+          <UserButton afterSignOutUrl="/sign-in" />
+        </SignedIn>
+        <SignedOut>
+          <RedirectToSignIn />
+        </SignedOut>
+
+        {/* Routes */}
+        <Routes>
+          {/* Auth routes */}
+          <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
+          <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+
+          {/* Protected routes */}
+          <Route path="/" element={
+            <SignedIn>
+              <App2 />
+            </SignedIn>
+          } />
+          <Route path="/article:id" element={
+            <SignedIn>
+              <Article />
+            </SignedIn>
+          } />
+          <Route path="/form" element={
+            <SignedIn>
+              <Form />
+            </SignedIn>
+          } />
+        </Routes>
+      </div>
+    </DataContext.Provider>
   );
 }
 
-export default App
+export default App;
+

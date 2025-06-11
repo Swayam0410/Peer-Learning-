@@ -8,7 +8,7 @@ const Article=()=>{
             <h1>{entry.topic}</h1>
           <div className="inf">
               <p>Contributed by:{entry.name}</p>
-            <p>Id:{entry.id}</p>
+            <p>Id:{entry.college_id}</p>
             <p>Subject:{entry.subject}</p>
           </div>
         </div>

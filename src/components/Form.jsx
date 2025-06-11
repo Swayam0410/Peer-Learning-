@@ -1,24 +1,44 @@
 import "./Form.css"
 import { useNavigate } from "react-router-dom";
-import { useContext } from "react";
 import DataContext from "./Context/dataContext";
 const Form=()=>{
      const navigate=useNavigate();
-     const [data,SetData]=useContext(DataContext);
-     const handleData=(formData)=>{
-        const newData={
-            id:formData.get("id"),
+     const handleData=async (formData)=>{
+        try{
+             const newData={
+            college_id:formData.get("id"),
             topic:formData.get("topic"),
             sem:formData.get("sem"),
             name:formData.get("name"),
             subject:formData.get("sub"),
-            description:formData.get("content")
+            description:formData.get("description")
         };
-        SetData(data=>[...data,newData]);
-        navigate("/");
-     }
+        console.log(newData);
+             const res=await fetch('http://localhost:3000/form',{
+            method:'Post',
+            headers:{
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(newData)
+        });
+        console.log("completed posting");
+        
+        }catch(err){
+            console.error('Error Sending Data',err);
+        }finally{
+            navigate("/");
+        }  
+    
+    }
+
+
+  const handleSubmit = (e) => {
+    e.preventDefault();               // ← stop full‐page reload
+    const formData = new FormData(e.target);
+    handleData(formData);
+  };
     return (
-        <form action={handleData} className="whole3" >
+        <form onSubmit={handleSubmit} className="whole3" >
             <label htmlFor="name">Enter Your Name:</label>
             <input type="text" name="name" id="" required/>
             <label htmlFor="id">Enter Your Id:</label>
@@ -29,8 +49,8 @@ const Form=()=>{
             <input type="number" name="sem" id="" required min={1} max={8}/>
             <label htmlFor="topic">Enter Topic:</label>
             <input type="text" name="topic" id="" required/>
-            <label htmlFor="content">Enter your Content:</label>
-            <textarea name="content" id="" className="cnt" required></textarea>
+            <label htmlFor="description">Enter your Content:</label>
+            <textarea name="description" id="" className="cnt" required></textarea>
             <button type="submit">Submit</button>
         </form>
     );

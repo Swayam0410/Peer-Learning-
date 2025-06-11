@@ -1,9 +1,10 @@
 .whole{
-    height: 90vh;
-    width: 90vw;
+    height: 90%;
+    width: 90%;
     align-self: center;
     display: grid;
     grid-template-columns: repeat(3,500px);
     gap: 20px;
     padding: 20px;
+    margin-left: 6%;
 }

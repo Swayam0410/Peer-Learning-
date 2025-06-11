@@ -1,13 +1,28 @@
 import "./SessionCard.css"
-import { useContext } from "react";
-import dataContext from "./Context/dataContext";
-let SessionCard=({topic,sem,name,subject,onClick,id})=>{
-        const [data,setData]=useContext(dataContext);
-        const handleClick=(e)=>{
+import { useNavigate } from "react-router-dom";
+
+let SessionCard=({topic,sem,name,subject,onClick,_id})=>{
+        const navigate=useNavigate();
+        console.log(_id);
+        const handleClick=async (e)=>{
                 e.stopPropagation();
                 e.preventDefault();
-                const arr=data.filter(a=>a.id!==id && a.topic!=topic);
-                setData(arr);
+                try{
+                const res=await fetch('http://localhost:3000/form',{
+                method:'Delete',
+                 headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ _id }),
+                });
+                const resp=res.json();
+                console.log(resp);
+                }catch(err){
+                        console.log("error deleting file",err);
+                }finally{
+                        window.location.reload();
+                }
+                
         }
    return (<div className="outer" onClick={onClick}>
            <h2 className="topic">Topic:{topic}</h2>

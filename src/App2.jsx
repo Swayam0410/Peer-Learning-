@@ -4,9 +4,9 @@ import { useContext } from 'react';
 import DataContext from './components/Context/dataContext.jsx';
 const App2=()=>{
   const [data]=useContext(DataContext);
-   return( <>
+   return( <div className='entry'>
      <Header/>
      <Session arr={data}/>
-    </>);
+    </div>);
 }
 export default App2;

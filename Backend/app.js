@@ -12,9 +12,6 @@ app.use(cors({
   allowedHeaders: ["Content-Type"]
 }));
 dbConnect();
-app.get("/",(req,res)=>{
-  res.send("HELL");
-});
 
 app.post("/form",async (req,res)=>{
   try{
@@ -28,16 +25,32 @@ app.post("/form",async (req,res)=>{
   }
 });
 
-app.get("/form",async (req,res)=>{
-  try{
-    const data=await User.find({});
-    res.send(JSON.stringify(data));
-    console.log(JSON.stringify(data));
+// app.get("/",async (req,res)=>{
+//   try{
+//     const data=await User.find({});
+//     res.send(JSON.stringify(data));
+//     console.log(JSON.stringify(data));
 
-  }catch(err){
-    console.log(error);
+//   }catch(err){
+//     console.log(error);
+//   }
+// })
+// routes/items.js or in your main route file
+app.get("/", async (req, res) => {
+  try {
+    const { semester } = req.query;
+
+    // Build query object dynamically
+    let query = {};
+    if (semester) query.sem = Number(semester)  ;
+    const data = await User.find(query);
+      res.send(JSON.stringify(data));
+    console.log(JSON.stringify(data));
+  } catch (err) {
+    console.log("error fetching data from server/mongo",error);
   }
-})
+});
+
 
 app.delete('/form', async (req, res) => {
   const { _id } = req.body;

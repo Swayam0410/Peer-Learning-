@@ -18,4 +18,13 @@ font-size: 20px;
 .del{
     width: 150px;
     background-color: red;
+    border: 1px solid white;
+    border-radius: 20px;
+}
+.viewbtn{
+    width: 150px;
+    padding: 10px;
+    margin: 10px;
+    border: 1px solid lightblue;
+    border-radius: 15px;
 }

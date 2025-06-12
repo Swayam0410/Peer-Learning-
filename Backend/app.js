@@ -16,7 +16,7 @@ dbConnect();
 app.post("/form",async (req,res)=>{
   try{
     const data=req.body;
-    console.log(data);
+    console.log(data.email);
     const newEntry = new User(data);
     await newEntry.save();
     res.status(201).send("Data saved to MongoDB");
@@ -36,7 +36,7 @@ app.post("/form",async (req,res)=>{
 //   }
 // })
 // routes/items.js or in your main route file
-app.get("/", async (req, res) => {
+app.get(`/`, async (req, res) => {
   try {
     const { semester } = req.query;
 
@@ -45,7 +45,6 @@ app.get("/", async (req, res) => {
     if (semester) query.sem = Number(semester)  ;
     const data = await User.find(query);
       res.send(JSON.stringify(data));
-    console.log(JSON.stringify(data));
   } catch (err) {
     console.log("error fetching data from server/mongo",error);
   }

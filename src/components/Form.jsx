@@ -1,7 +1,11 @@
 import "./Form.css"
 import { useNavigate } from "react-router-dom";
 import DataContext from "./Context/dataContext";
+import { useUser } from "@clerk/clerk-react";
+import { useEffect } from "react";
 const Form=()=>{
+     const { user } = useUser();
+      let em="";
      const navigate=useNavigate();
      const handleData=async (formData)=>{
         try{
@@ -11,7 +15,8 @@ const Form=()=>{
             sem:formData.get("sem"),
             name:formData.get("name"),
             subject:formData.get("sub"),
-            description:formData.get("description")
+            description:formData.get("description"),
+            email:em
         };
         console.log(newData);
              const res=await fetch('http://localhost:3000/form',{
@@ -30,8 +35,9 @@ const Form=()=>{
         }  
     
     }
-
-
+    useEffect(()=>{
+        em=String(user.emailAddresses[0].emailAddress);
+    },[]);
   const handleSubmit = (e) => {
     e.preventDefault();               // ← stop full‐page reload
     const formData = new FormData(e.target);
@@ -51,7 +57,7 @@ const Form=()=>{
             <input type="text" name="topic" id="" required/>
             <label htmlFor="description">Enter your Content:</label>
             <textarea name="description" id="" className="cnt" required></textarea>
-            <button type="submit">Submit</button>
+            <button type="submit" className="button1">Submit</button>
         </form>
     );
 }

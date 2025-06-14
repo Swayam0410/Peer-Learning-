@@ -1,9 +1,12 @@
 .whole3{
-    height: 100vh;
+    height: 100%;
+    width: 100vw;
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     align-content: space-between;
+    color: black;
+    
 
 }
 input{

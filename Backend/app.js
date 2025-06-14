@@ -8,7 +8,7 @@ const port=3000;
 app.use(express.json());
 app.use(cors({
   origin: "http://localhost:5173",
-  methods: ["GET","POST","OPTIONS","DELETE"],
+  methods: ["GET","POST","OPTIONS","DELETE","PATCH","PUT"],
   allowedHeaders: ["Content-Type"]
 }));
 dbConnect();
@@ -47,6 +47,39 @@ app.get(`/`, async (req, res) => {
       res.send(JSON.stringify(data));
   } catch (err) {
     console.log("error fetching data from server/mongo",error);
+  }
+});
+
+
+app.get('/edit/:id',async (req,res)=>{
+  const {id}=req.params;
+  console.log(id);
+  console.log(1);
+  try{
+    const data=await User.findById(id);
+    if(!data)return res.status(404).json({ error: "Session not found" });
+    res.send(JSON.stringify(data));
+  }catch(err){
+    console.log("error fetching data for the edit",err);
+  }
+});
+
+app.put('/edit/:id', async (req, res) => {
+  const { id } = req.params;
+  const updatedData = req.body;
+
+  try {
+    const updatedSession = await User.findByIdAndUpdate(id, updatedData, {
+      new: true,
+      overwrite: false, // ← use false to update fields without replacing whole document
+    });
+
+    if (!updatedSession)
+      return res.status(404).json({ error: "Session not found" });
+
+    res.json(updatedSession);
+  } catch (err) {
+    res.status(500).json({ error: "Error updating session" });
   }
 });
 

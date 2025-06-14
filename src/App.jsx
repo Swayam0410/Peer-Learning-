@@ -4,7 +4,10 @@ import Article from './components/Article.jsx';
 import DataContext from './components/Context/dataContext.jsx';
 import Form from './components/Form.jsx';
 import { useEffect, useState } from 'react';
-
+import EditForm from './components/EditForm.jsx';
+import { useNavigate } from 'react-router-dom';
+import { ArrowLeft } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 import {
   SignIn,
   SignUp,
@@ -17,7 +20,9 @@ import {
 import { Routes, Route } from "react-router-dom";
 
 function App() {
-  
+  const navigate=useNavigate();
+  const location=useLocation();
+  const currentPath = location.pathname;
         let complete_data = [
   {
     id: "B522061",
@@ -106,42 +111,36 @@ function App() {
     setData(complete_data);
   }, []);
 
-  return (
-    <DataContext.Provider value={[data, setData]}>
-      <div style={{ padding: '1rem' }}>
-        {/* Header Area with UserButton */}
-        <SignedIn>
-          <UserButton afterSignOutUrl="/sign-in" />
-        </SignedIn>
-        <SignedOut>
-          <RedirectToSignIn />
-        </SignedOut>
-
-        {/* Routes */}
-        <Routes>
-          {/* Auth routes */}
-          <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
-          <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
-
-          {/* Protected routes */}
-          <Route path="/" element={
-            <SignedIn>
-              <App2 />
-            </SignedIn>
-          } />
-          <Route path="/article:id" element={
-            <SignedIn>
-              <Article />
-            </SignedIn>
-          } />
-          <Route path="/form" element={
-            <SignedIn>
-              <Form />
-            </SignedIn>
-          } />
-        </Routes>
+  return (<DataContext.Provider value={[data, setData]}>
+  <div className="max-w-7xl mx-auto px-4 py-6">
+    <SignedIn>
+      <div className="flex justify-end mb-4">
+        <UserButton afterSignOutUrl="/sign-in" />
       </div>
-    </DataContext.Provider>
+    </SignedIn>
+
+    <SignedOut>
+      <RedirectToSignIn />
+    </SignedOut>
+   {currentPath!=="/" && <button
+        onClick={() => navigate("/")}
+        className="mb-6 flex item gap-2 text-blue-600 hover:underline"
+      >
+        <ArrowLeft className="w-5 h-5" />
+        Back to Home
+      </button>}
+    {/* Routes */}
+    <Routes>
+      <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />
+      <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
+      <Route path="/edit/:id" element={<EditForm />} />
+      <Route path="/" element={<SignedIn><App2 /></SignedIn>} />
+      <Route path="/article:id" element={<SignedIn><Article /></SignedIn>} />
+      <Route path="/form" element={<SignedIn><Form /></SignedIn>} />
+    </Routes>
+  </div>
+</DataContext.Provider>
+
   );
 }
 

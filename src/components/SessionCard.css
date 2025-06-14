@@ -28,3 +28,11 @@ font-size: 20px;
     border: 1px solid lightblue;
     border-radius: 15px;
 }
+.btns{
+    display: flex;
+    flex-direction: row;
+    size: 20px;
+    height: 50px;
+    justify-content: center;
+    align-items: center;
+}

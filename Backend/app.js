@@ -46,7 +46,7 @@ app.get(`/`, async (req, res) => {
     const data = await User.find(query);
       res.send(JSON.stringify(data));
   } catch (err) {
-    console.log("error fetching data from server/mongo",error);
+    console.log("error fetching data from server/mongo",err);
   }
 });
 
@@ -80,6 +80,36 @@ app.put('/edit/:id', async (req, res) => {
     res.json(updatedSession);
   } catch (err) {
     res.status(500).json({ error: "Error updating session" });
+  }
+});
+
+app.patch("/", async (req, res) => {
+  const { userEmail } = req.body; // Email of the logged-in user
+  const { id } = req.body;
+
+  try {
+    const post = await User.findById(id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    const alreadyUpvoted = post.upvotes.includes(userEmail);
+
+    if (alreadyUpvoted) {
+      // ❌ Remove upvote
+      post.upvotes = post.upvotes.filter((email) => email !== userEmail);
+    } else {
+      // ✅ Add upvote
+      post.upvotes.push(userEmail);
+    }
+
+    await post.save();
+
+    return res.status(200).json({
+      upvotes: post.upvotes,
+      count: post.upvotes.length,
+      upvoted: !alreadyUpvoted,
+    });
+  } catch (err) {
+    return res.status(500).json({ error: "Server error" });
   }
 });
 

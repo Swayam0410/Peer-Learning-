@@ -1,9 +1,8 @@
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 const Article = () => {
   const location = useLocation();
-  const navigate = useNavigate();
   const { entry } = location.state || {};
 
   if (!entry) return <div className="text-center mt-10 text-red-500">No data found.</div>;

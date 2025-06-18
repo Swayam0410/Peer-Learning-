@@ -25,6 +25,8 @@ const Form = () => {
         subject: formData.get("sub"),
         description: formData.get("description"),
         email: email,
+        upvotes:[],
+        viewed:[email],
       };
 
       console.log(newData);
@@ -47,6 +49,7 @@ const Form = () => {
     e.preventDefault();
     const formData = new FormData(e.target);
     handleData(formData);
+    console.log(formData);
   };
 
   return (

@@ -16,7 +16,7 @@ import {
   SignedOut,
   RedirectToSignIn,
 } from '@clerk/clerk-react';
-
+import LeaderBoard from './components/LeaderBoard.jsx';
 import { Routes, Route } from "react-router-dom";
 
 function App() {
@@ -137,6 +137,7 @@ function App() {
       <Route path="/" element={<SignedIn><App2 /></SignedIn>} />
       <Route path="/article:id" element={<SignedIn><Article /></SignedIn>} />
       <Route path="/form" element={<SignedIn><Form /></SignedIn>} />
+      <Route path='/leaderboard' element={<LeaderBoard/>}/>
     </Routes>
   </div>
 </DataContext.Provider>

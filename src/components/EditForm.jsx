@@ -13,6 +13,7 @@ const EditForm = () => {
     topic: "",
     description: "",
     email: "",
+    upvotes:[]
   });
   useEffect(() => {
     async function fetchSession() {

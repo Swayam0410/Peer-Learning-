@@ -26,7 +26,14 @@ const userSchema=new mongoose.Schema({
     },
     email:{
         type:String
-    }
+    },
+   upvotes: {
+  type: [String], // array of user emails
+  default: [],
+},viewed:{
+    type:[String],
+    default:[],
+}
 },{
   timestamps: true
 });

@@ -3,7 +3,7 @@ import { ArrowLeft } from "lucide-react";
 
 const Article = () => {
   const location = useLocation();
-  const { entry } = location.state || {};
+  const  entry  = location.state.entry || location.state.post ||{}
 
   if (!entry) return <div className="text-center mt-10 text-red-500">No data found.</div>;
 
@@ -27,9 +27,10 @@ const Article = () => {
           </div>
         </div>
 
-        <div className="prose max-w-none text-lg leading-relaxed text-gray-700 mx-auto">
-          {entry.description}
-        </div>
+      <div
+  className="prose max-w-none text-lg leading-relaxed text-gray-700 mx-auto"
+  dangerouslySetInnerHTML={{ __html: entry.description }}
+/>
       </div>
     </div>
   );

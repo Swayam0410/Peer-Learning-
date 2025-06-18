@@ -40,7 +40,9 @@ const SessionCard = ({ onClick,topic, sem, name, subject, _id, email,upvotes }) 
     }
   };
 
-  const editHandle = () => {
+  const editHandle = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
     navigate(`/edit/${_id}`);
   };
 
@@ -63,7 +65,7 @@ const SessionCard = ({ onClick,topic, sem, name, subject, _id, email,upvotes }) 
   }
 
   return (
-   <div
+   <div onClick={onClick}
   className="relative bg-gradient-to-br from-cyan-700 to-cyan-900 text-white rounded-2xl shadow-xl p-6 w-full max-w-md hover:scale-[1.02] transition-transform duration-300 ease-in-out cursor-pointer"
 >
   {/* 🔼 Upvote Button Positioned at Top-Right */}
@@ -125,7 +127,11 @@ const SessionCard = ({ onClick,topic, sem, name, subject, _id, email,upvotes }) 
       open={showDialog}
       onOpenChange={setShowDialog}
       onConfirm={handleClick}
-      onCancel={() => setShowDialog(false)}
+      onCancel={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        setShowDialog(false)
+      }}
     />
   </div>
 </div>

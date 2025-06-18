@@ -41,3 +41,16 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
 }
+/* Removes default Quill borders that leak out */
+.ql-container {
+  border: none !important;
+}
+
+.ql-toolbar {
+  border: none !important;
+}
+
+.ql-editor {
+  min-height: 160px;
+  font-size: 1rem;
+}

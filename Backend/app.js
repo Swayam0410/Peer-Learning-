@@ -51,6 +51,26 @@ app.get(`/`, async (req, res) => {
 });
 
 
+app.get('/performance/:email', async (req, res) => {
+  const { email } = req.params;
+  console.log("Fetching performance for:", email);
+
+  try {
+    const posts = await User.find({ email });
+
+    if (!posts || posts.length === 0) {
+      return res.status(200).json({ message: "No postings from your side." });
+    }
+
+    res.status(200).json(posts);
+  } catch (err) {
+    console.error("Error fetching performance data:", err);
+    res.status(500).json({ error: "Server error" });
+  }
+});
+
+
+
 app.get('/edit/:id',async (req,res)=>{
   const {id}=req.params;
   console.log(id);

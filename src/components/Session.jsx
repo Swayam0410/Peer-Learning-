@@ -5,8 +5,10 @@ import { useNavigate } from "react-router-dom";
 import Filter from "./Filter";
 import { useEffect, useState } from "react";
 import useDebounce from "./useDebounce";
+import { useUser } from "@clerk/clerk-react";
 
 let Session=  ()=>{
+  const { user }=useUser();
   const [filters, setFilters] = useState({ semester: '' });
  
   const [arr,setArr]=useState([]);
@@ -32,12 +34,14 @@ const handleSearch=(e)=>{
   setSearch(e.target.value);
 }
  useEffect(() => {
+  console.log(user.fullName,user.username,user.primaryEmailAddress.emailAddress,user?.phoneNumbers?.[0]?.phoneNumber);
+
   fetchData(filters);
 }, [filters,debouncedSearch]);
   
     const navigate=useNavigate();
      const handleClick = (entry) => {
-    navigate("/article:id", {
+    navigate(`/article/${entry._id}`, {
       state: { entry },
     });
     console.log("hello");

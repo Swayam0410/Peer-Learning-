@@ -20,3 +20,8 @@ input{
 button1{
     background-color:  green;
 }
+.ql-editor {
+  min-height: 150px;
+  max-height: 400px;
+  overflow-y: auto;
+}

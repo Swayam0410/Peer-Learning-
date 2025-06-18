@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import ReactQuill from "react-quill-new";
+import 'react-quill-new/dist/quill.snow.css';
 
 const EditForm = () => {
   const { id } = useParams();
@@ -132,17 +134,37 @@ const EditForm = () => {
           />
         </div>
 
+    
+
         <div>
-          <label className="block text-sm font-semibold text-gray-700">Your Content</label>
-          <textarea
-            name="description"
-            rows={6}
-            value={formData.description}
-            onChange={handleChange}
-            required
-            className="mt-1 block w-full px-4 py-2 border rounded-lg shadow-sm  text-black focus:ring-blue-500 focus:border-blue-500 border-gray-300 resize-none"
-          />
-        </div>
+  <label className="block font-semibold text-gray-700">Your Content</label>
+<div className="rounded-xl overflow-hidden shadow-md">
+  <ReactQuill
+    value={formData.description}
+    onChange={(value) =>
+      setFormData((prev) => ({ ...prev, description: value }))
+    }
+    placeholder="Explain your topic here"
+    theme="snow"
+    className="text-black rounded-xl bg-white shadow-md"
+   style={{ maxHeight: "auto" }} // Let it grow
+    
+  />
+  </div>
+
+  <style>
+    {`
+      .ql-editor {
+        font-size: 1.2rem;
+        max-height: 400px;
+        padding: 1rem;
+      }
+    `}
+  </style>
+</div>
+
+
+        
 
         <div className="text-center">
           <button

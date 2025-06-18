@@ -8,6 +8,7 @@ import EditForm from './components/EditForm.jsx';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
+import IndividualPerformance from "./components/IndividualPerformance.jsx"
 import {
   SignIn,
   SignUp,
@@ -123,7 +124,7 @@ function App() {
       <RedirectToSignIn />
     </SignedOut>
    {currentPath!=="/" && <button
-        onClick={() => navigate("/")}
+        onClick={() => navigate(-1)}
         className="mb-6 flex item gap-2 text-blue-600 hover:underline"
       >
         <ArrowLeft className="w-5 h-5" />
@@ -135,9 +136,10 @@ function App() {
       <Route path="/sign-up/*" element={<SignUp routing="path" path="/sign-up" />} />
       <Route path="/edit/:id" element={<EditForm />} />
       <Route path="/" element={<SignedIn><App2 /></SignedIn>} />
-      <Route path="/article:id" element={<SignedIn><Article /></SignedIn>} />
+      <Route path="/article/:id" element={<SignedIn><Article /></SignedIn>} />
       <Route path="/form" element={<SignedIn><Form /></SignedIn>} />
       <Route path='/leaderboard' element={<LeaderBoard/>}/>
+      <Route path='/performance/:email' element={<IndividualPerformance/>}/>
     </Routes>
   </div>
 </DataContext.Provider>

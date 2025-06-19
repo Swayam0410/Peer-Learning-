@@ -1,40 +1,70 @@
-import { useEffect, useState } from "react"
-import SessionCard from "./SessionCard";
+import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+
+
 const LeaderBoard=()=>{
-    const [arr,setArr]=useState([]);
-    const fetchData=async ()=>{
-        try{
-    const url = `http://localhost:3000/`;
-    const res = await fetch(url);
-    const resp = await res.json();
-    console.log(resp);
-    resp.sort((a, b) => b.upvotes.length - a.upvotes.length);
-    setArr(resp);
-        }catch(err){
-            console.log("Error fetching data for LeaderBoard",err);
-        }
+  const navigate=useNavigate();
+  const [data,setData]=useState([]);
+
+  const fetchData=async ()=>{
+    try{
+
+      const d= await fetch("http://localhost:3000/leaderboard");
+     const json = await d.json(); // await here
+     console.log(json,100);
+    setData(json);
+    }catch(err){
+      console.log("error fetching leaderboard data ", err);
     }
-    useEffect(()=>{
-        fetchData();
-    },[]);
-    return(
-          <div className="container mx-auto px-4 py-6">
-  {/* Filter Dropdown */}
-  {/* Sessions Grid */}
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-    {arr.map((a) => (
-      <SessionCard
-        key={a._id}
-        onClick={() => {
-          console.log("a");
-        //   handleClick(a);
-          console.log(100);
-        }}
-        {...a}
-      />
-    ))}
+  }
+  useEffect(()=>{
+    fetchData();
+    console.log(data);
+  },[]);
+return (
+  <div className="min-h-screen px-6 py-10 bg-gray-50">
+    <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-8">
+      <h2 className="text-3xl font-bold text-center text-indigo-600 mb-8">
+        🏆 Leaderboard
+      </h2>
+
+      {data.length===0 ? (
+        <p className="text-center text-gray-500">Loading leaderboard...</p>
+      ) : (
+        <table className="w-full table-auto border-collapse">
+          <thead>
+            <tr className="bg-indigo-100 text-indigo-800 text-sm uppercase">
+              <th className="p-3 text-left">Rank</th>
+              <th className="p-3 text-left">Name</th>
+              <th className="p-3 text-left">Email</th>
+              <th className="p-3 text-left">Upvotes</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.map((user, index) => (
+              <tr
+                key={index}
+                className="border-b hover:bg-indigo-50 transition duration-200"
+                onClick={()=>navigate(`/performance/${user._id}`)}
+              
+              >
+                <td className="p-3 font-semibold text-gray-700">
+                  {index === 0 ? "🥇" : index === 1 ? "🥈" : index === 2 ? "🥉" : index + 1}
+                </td>
+                <td className="p-3 text-black">{user.name}</td>
+                <td className="p-3 text-sm text-gray-500">{user._id}</td>
+                <td className="p-3 font-semibold text-indigo-600">
+                  {user.totalUpvotes}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      )}
+    </div>
   </div>
-</div>
-    );
+);
+
 }
-export default LeaderBoard;
+
+export default LeaderBoard

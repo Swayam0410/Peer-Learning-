@@ -1,4 +1,18 @@
 import mongoose from "mongoose";
+const commentSchema = new mongoose.Schema({
+  comment: {
+    type: String,
+    required: true,
+  },
+  poster_email: {
+    type: String,
+    required: true,
+  },
+  poster_name:{
+    type:String,
+    required:true,
+  }
+});
 const userSchema=new mongoose.Schema({
       college_id:{
         type:String,
@@ -33,7 +47,11 @@ const userSchema=new mongoose.Schema({
 },viewed:{
     type:[String],
     default:[],
-}
+},
+ comments: {
+    type: [commentSchema], // array of comment objects
+    default: [],
+  }
 },{
   timestamps: true
 });

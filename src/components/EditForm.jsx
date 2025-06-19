@@ -2,8 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import ReactQuill from "react-quill-new";
 import 'react-quill-new/dist/quill.snow.css';
+import { toast } from "react-hot-toast";
+import { marked } from "marked";
+
 
 const EditForm = () => {
+    const [aiSuggestion, setAiSuggestion] = useState("");
+  const [loading, setLoading] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
 
@@ -32,6 +37,45 @@ const EditForm = () => {
 
     fetchSession();
   }, [id]);
+  const analyzeContent = async (text) => {
+  setLoading(true);
+  try {
+    const res = await fetch("http://localhost:3000/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: text }),
+    });
+
+    const data = await res.json();
+    console.log("Suggestions:", data.suggestion);
+    setAiSuggestion(data.suggestion);
+  } catch (error) {
+    console.error("Error analyzing content:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+function formatSuggestion(text) {
+  return marked.parse(text);
+}
+
+
+const handleAnalyze = async () => {
+
+  toast.loading("Analyzing content...");
+
+  try {
+    await analyzeContent(formData.description);
+    toast.dismiss(); // Remove loading toast
+    toast.success("AI suggestions generated!");
+  } catch (err) {
+    toast.dismiss();
+    toast.error("Failed to analyze content.",err);
+  }
+};
+
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -162,6 +206,33 @@ const EditForm = () => {
     `}
   </style>
 </div>
+
+<button
+  type="button"
+  onClick={handleAnalyze}
+  className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 "
+>
+  Analyze with AI 🤖
+</button>
+
+{loading && (
+  <div className="text-blue-700 font-medium mt-2 animate-pulse">
+    🤖 Generating suggestions...
+  </div>
+)}
+
+{aiSuggestion && (
+  <div className="bg-gray-100 border border-blue-300 rounded-md p-4 mt-4">
+    <h3 className="text-lg font-semibold text-blue-800 mb-2">
+      💡 AI Suggestions:
+    </h3>
+<div
+  className="text-gray-800 prose max-w-none"
+  dangerouslySetInnerHTML={{ __html: formatSuggestion(aiSuggestion) }}
+></div>
+
+  </div>
+)}
 
 
         

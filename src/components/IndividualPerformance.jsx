@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
 const IndividualPerformance = () => {
-
   const { email } = useParams();
   const navigate = useNavigate();
   const [posts, setPosts] = useState([]);
@@ -29,6 +28,8 @@ const IndividualPerformance = () => {
 
   const totalUploads = posts.length;
   const totalUpvotes = posts.reduce((acc, post) => acc + (post.upvotes?.length || 0), 0);
+  const totalComments = posts.reduce((acc, post) => acc + (post.comments?.length || 0), 0);
+
   const filteredPosts = viewUpvotedOnly
     ? posts.filter((post) => (post.upvotes?.length || 0) > 0)
     : posts;
@@ -47,7 +48,7 @@ const IndividualPerformance = () => {
       <div className="max-w-5xl mx-auto bg-white shadow-lg rounded-2xl p-8 space-y-6">
         <h2 className="text-3xl font-bold text-gray-800 text-center">Your Dashboard</h2>
 
-        <div className="grid sm:grid-cols-2 gap-6 text-center">
+        <div className="grid sm:grid-cols-3 gap-6 text-center">
           <div className="bg-blue-100 text-blue-800 rounded-xl py-6">
             <p className="text-4xl font-bold">{totalUploads}</p>
             <p className="mt-1 text-lg">Total Uploads</p>
@@ -62,6 +63,10 @@ const IndividualPerformance = () => {
               {viewUpvotedOnly ? "Viewing only upvoted" : "Click to view only upvoted"}
             </small>
           </div>
+          <div className="bg-purple-100 text-purple-800 rounded-xl py-6">
+            <p className="text-4xl font-bold">{totalComments}</p>
+            <p className="mt-1 text-lg">Total Comments</p>
+          </div>
         </div>
 
         <div>
@@ -75,9 +80,14 @@ const IndividualPerformance = () => {
                   key={post._id}
                   className="border border-gray-200 p-4 rounded-xl shadow-sm bg-gray-50"
                 >
-                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center" onClick={()=>  navigate(`/article/${post._id}`, {
-      state: { post },
-    })}>
+                  <div
+                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center"
+                    onClick={() =>
+                      navigate(`/article/${post._id}`, {
+                        state: { post },
+                      })
+                    }
+                  >
                     <div>
                       <p className="text-lg font-semibold text-gray-800">{post.topic}</p>
                       <p className="text-sm text-gray-500">
@@ -86,10 +96,13 @@ const IndividualPerformance = () => {
                       <p className="text-xs text-gray-400">
                         Posted on: {new Date(post.createdAt).toLocaleDateString()}
                       </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        💬 Comments: {post.comments?.length || 0}
+                      </p>
                     </div>
                     <div className="mt-2 sm:mt-0">
                       <p className="text-sm text-gray-600">
-                        Upvotes: {post.upvotes?.length || 0}
+                        👍 Upvotes: {post.upvotes?.length || 0}
                       </p>
                     </div>
                   </div>

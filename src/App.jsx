@@ -9,6 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import IndividualPerformance from "./components/IndividualPerformance.jsx"
+import { Toaster } from "react-hot-toast";
 import {
   SignIn,
   SignUp,
@@ -112,7 +113,11 @@ function App() {
     setData(complete_data);
   }, []);
 
-  return (<DataContext.Provider value={[data, setData]}>
+  return (
+
+  
+  <DataContext.Provider value={[data, setData]}>
+    <Toaster position="top-right" />
   <div className="max-w-7xl mx-auto px-4 py-6">
     <SignedIn>
       <div className="flex justify-end mb-4">
@@ -123,13 +128,30 @@ function App() {
     <SignedOut>
       <RedirectToSignIn />
     </SignedOut>
-   {currentPath!=="/" && <button
-        onClick={() => navigate(-1)}
-        className="mb-6 flex item gap-2 text-blue-600 hover:underline"
+{currentPath !== "/" && (
+  <>
+    {/* Fixed Back button */}
+    <button
+      onClick={() => navigate(-1)}
+      className="fixed top-4 left-4 z-50 flex items-center gap-2 bg-white shadow-md px-3 py-1 rounded-md text-blue-600 hover:underline"
+    >
+      <ArrowLeft className="w-5 h-5" />
+      Back
+    </button>
+
+    {/* Inline back to home button */}
+    <div className="mb-6 flex justify-end pr-4">
+      <button
+        onClick={() => navigate("/")}
+        className="flex items-center gap-2 text-blue-600 hover:underline"
       >
         <ArrowLeft className="w-5 h-5" />
         Back to Home
-      </button>}
+      </button>
+    </div>
+  </>
+)}
+
     {/* Routes */}
     <Routes>
       <Route path="/sign-in/*" element={<SignIn routing="path" path="/sign-in" />} />

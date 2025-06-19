@@ -3,6 +3,16 @@ import cors from "cors";
 import User from "./models/user.js";
 import dbConnect from "./db.js";
 import mongoose from "mongoose";
+import { clerkClient } from "@clerk/clerk-sdk-node";
+import { GoogleGenerativeAI } from "@google/generative-ai";
+import dotenv from "dotenv";
+
+
+dotenv.config();
+
+
+const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+
 const app=express();
 const port=3000;
 app.use(express.json());
@@ -24,6 +34,10 @@ app.post("/form",async (req,res)=>{
     console.error(err);
   }
 });
+
+// PATCH /posts/:id/comments
+
+
 
 // app.get("/",async (req,res)=>{
 //   try{
@@ -133,6 +147,122 @@ app.patch("/", async (req, res) => {
   }
 });
 
+
+app.patch("/article/:id", async (req, res) => {
+  const { id } = req.params;
+  const { comment, poster_email, poster_name } = req.body;
+
+  try {
+    const post = await User.findById(id);
+    if (!post) return res.status(404).json({ error: "Post not found" });
+
+    post.comments.push({ comment, poster_email, poster_name });
+    await post.save();
+
+    res.json({ message: "Comment added", comments: post.comments });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ 
+      
+      error: "Internal server error" });
+  }
+});
+
+app.delete("/article/:id", async (req, res) => {
+  const { id } = req.params;
+  const { _id } = req.body;
+
+  try {
+    const article = await User.findById(id);
+    if (!article) return res.status(404).json({ error: "Article not found" });
+
+    // Fix: convert ObjectId to string before comparing
+    article.comments = article.comments.filter(
+      (comment) => comment._id.toString() !== _id
+    );
+
+    await article.save();
+
+    res.json({ message: "Comment deleted", comments: article.comments });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.get("/leaderboard", async (req, res) => {
+  try {
+      const data = await User.aggregate([
+      {
+        $group: {
+          _id: "$email",
+          totalUpvotes: { $sum: { $size: "$upvotes" } },
+        },
+      },
+      { $sort: { totalUpvotes: -1 } },
+    ]);
+  const withNames = await Promise.all(
+  data.map(async (entry) => {
+    try {
+      const { data: users } = await clerkClient.users.getUserList({ limit: 100 });
+
+      const user = users.find((u) =>
+        u.emailAddresses.some((e) => e.emailAddress === entry._id)
+      );
+
+      return {
+        ...entry,
+        name: user ? user.username : "Unknown",
+      };
+    } catch (err) {
+      console.error("Error fetching user for email:", entry._id, err);
+      return {
+        ...entry,
+        name: "Unknown",
+      };
+    }
+  })
+);
+
+
+res.json(withNames);
+    
+  } catch (err) {
+    console.error("Error generating leaderboard:", err);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+app.post("/analyze", async (req, res) => {
+  try {
+    // You typically don't need to call listModels() here.
+    // The getGenerativeModel() function is sufficient to initialize the model.
+    // const models = await genAI.listModels(); // <-- Remove this line
+
+    const { content } = req.body;
+
+    // Ensure genAI is properly initialized and accessible here.
+    // Assuming 'genAI' is initialized elsewhere in your code like:
+    // import { GoogleGenerativeAI } from "@google/generative-ai";
+    // const genAI = new GoogleGenerativeAI(process.env.API_KEY);
+
+  const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
+// Use "gemini-pro" directly
+
+    const result = await model.generateContent(`You are a helpful assistant that provides suggestions and improvements on educational content\n
+      Please review the following learning explanation and suggest improvements or corrections:
+1. Pointing out errors (if any),
+2. Suggesting improvements (clarity, grammar, structure),
+3. Rewriting the improved version.\n${content}`);
+    const response = await result.response;
+    const suggestion = response.text();
+
+    res.json({ suggestion });
+  } catch (error) {
+    console.error("Error analyzing content:", error.message);
+    res.status(500).json({ error: "Failed to analyze content." });
+  }
+});
 
 app.delete('/form', async (req, res) => {
   const { _id } = req.body;

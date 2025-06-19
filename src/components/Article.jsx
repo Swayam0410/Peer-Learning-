@@ -1,10 +1,19 @@
 import { useLocation} from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
+import { useEffect, useState } from "react"; 
+import { User } from "lucide-react";
+import CommentSection from "./Comments";
 
 const Article = () => {
+
   const location = useLocation();
   const  entry  = location.state.entry || location.state.post ||{}
 
+
+  const [comments,setComments]=useState(entry.comments);
+useEffect(()=>{
+  console.log(comments);
+},[]);
   if (!entry) return <div className="text-center mt-10 text-red-500">No data found.</div>;
 
   return (
@@ -32,6 +41,8 @@ const Article = () => {
   dangerouslySetInnerHTML={{ __html: entry.description }}
 />
       </div>
+      <CommentSection initialComments={comments} sessionemail={entry.email}/>
+
     </div>
   );
 };

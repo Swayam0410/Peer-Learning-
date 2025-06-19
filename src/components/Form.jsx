@@ -3,10 +3,18 @@ import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import 'react-quill-new/dist/quill.snow.css';
 import ReactQuill from "react-quill-new";
+import { toast } from "react-hot-toast";
+import { marked } from "marked";
+
 
 const Form = () => {
+  const [aiSuggestion, setAiSuggestion] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const { user } = useUser();
   const [email, setEmail] = useState("");
+  const [topicSub,setTopicSub]=useState("");
+  const [subs,setSubs]=useState("");
   const navigate = useNavigate();
   const [des, setDes] = useState("");
 
@@ -22,7 +30,7 @@ const Form = () => {
         college_id: formData.get("id"),
         topic: formData.get("topic"),
         sem: formData.get("sem"),
-        name: formData.get("name"),
+        name: user?.fullName,
         subject: formData.get("sub"),
         description: des,
         email: email,
@@ -45,6 +53,49 @@ const Form = () => {
       navigate("/");
     }
   };
+const analyzeContent = async (text) => {
+  setLoading(true);
+  try {
+    const res = await fetch("http://localhost:3000/analyze", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ content: text }),
+    });
+
+    const data = await res.json();
+    console.log("Suggestions:", data.suggestion);
+    setAiSuggestion(data.suggestion);
+  } catch (error) {
+    console.error("Error analyzing content:", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
+function formatSuggestion(text) {
+  return marked.parse(text);
+}
+
+
+const handleAnalyze = async () => {
+  if (!des || !topicSub || !subs) {
+    toast.error("Please fill in Subject, Topic, and Description first.");
+    return;
+  }
+
+  toast.loading("Analyzing content...");
+
+  try {
+    await analyzeContent(des);
+    toast.dismiss(); // Remove loading toast
+    toast.success("AI suggestions generated!");
+  } catch (err) {
+    toast.dismiss();
+    toast.error("Failed to analyze content.",err);
+  }
+};
+
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -64,13 +115,13 @@ className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-l
           📝 Share Your Learning
         </h2>
 
-      <input
+      {/* <input
   type="text"
   name="name"
   placeholder="Enter Your Name"
   required
   className="px-4 py-3 text-base text-black placeholder-gray-400 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
-/>
+/> */}
 
 <input
   type="text"
@@ -84,6 +135,8 @@ className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-l
   type="text"
   name="sub"
   placeholder="Enter Subject"
+  value={subs}
+  onChange={(e)=>setSubs(e.target.value)}
   required
   className="px-4 py-3 text-base text-black placeholder-gray-400 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
 />
@@ -91,6 +144,8 @@ className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-l
 <input
   type="text"
   name="topic"
+  value={topicSub}
+  onChange={(e)=>setTopicSub(e.target.value)}
   placeholder="Topic"
   required
   className="px-4 py-3 text-base text-black placeholder-gray-400 bg-white border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition"
@@ -123,7 +178,36 @@ className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-l
       height: "250px", // Total component height
     }}
   />
+  
 </div>
+<button
+  type="button"
+  onClick={handleAnalyze}
+  className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 "
+>
+  Analyze with AI 🤖
+</button>
+
+{loading && (
+  <div className="text-blue-700 font-medium mt-2 animate-pulse">
+    🤖 Generating suggestions...
+  </div>
+)}
+
+{aiSuggestion && (
+  <div className="bg-gray-100 border border-blue-300 rounded-md p-4 mt-4">
+    <h3 className="text-lg font-semibold text-blue-800 mb-2">
+      💡 AI Suggestions:
+    </h3>
+<div
+  className="text-gray-800 prose max-w-none"
+  dangerouslySetInnerHTML={{ __html: formatSuggestion(aiSuggestion) }}
+></div>
+
+  </div>
+)}
+
+
 
         <button
           type="submit"

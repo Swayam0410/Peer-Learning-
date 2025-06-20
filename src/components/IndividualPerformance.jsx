@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import { Eye } from "lucide-react";
 
 const IndividualPerformance = () => {
   const { email } = useParams();
@@ -98,6 +99,9 @@ const IndividualPerformance = () => {
                       </p>
                       <p className="text-xs text-gray-500 mt-1">
                         💬 Comments: {post.comments?.length || 0}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-1">
+                        Views:{post.viewed?.length || 0}
                       </p>
                     </div>
                     <div className="mt-2 sm:mt-0">

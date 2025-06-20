@@ -10,6 +10,9 @@ import { ArrowLeft } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import IndividualPerformance from "./components/IndividualPerformance.jsx"
 import { Toaster } from "react-hot-toast";
+import HighlyRated from "./components/HighlyRated"
+import MostViews from './components/MostViews';
+import Newest from './components/Newest';
 import {
   SignIn,
   SignUp,
@@ -162,6 +165,9 @@ function App() {
       <Route path="/form" element={<SignedIn><Form /></SignedIn>} />
       <Route path='/leaderboard' element={<LeaderBoard/>}/>
       <Route path='/performance/:email' element={<IndividualPerformance/>}/>
+      <Route path='/highlyrated' element={<HighlyRated/>}/>
+      <Route path='/mostviews' element={<MostViews/>}/>
+      <Route path='/new' element={<Newest/>}/>
     </Routes>
   </div>
 </DataContext.Provider>

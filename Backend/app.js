@@ -168,6 +168,36 @@ app.patch("/article/:id", async (req, res) => {
   }
 });
 
+app.patch('/addview', async (req, res) => {
+  const { _id, email } = req.body;
+
+  if (!_id || !email) {
+    return res.status(400).json({ error: 'Post ID and email are required.' });
+  }
+
+  try {
+      const post = await User.findById(_id);
+
+    if (!post) {
+      return res.status(404).json({ error: 'Post not found.' });
+    }
+
+    if (!post.viewed.includes(email)) {
+      post.viewed.push(email);
+      await post.save();
+    }
+
+    res.status(200).json({
+      message: 'View recorded',
+      viewsCount: post.viewed.length,
+      post
+    });
+  } catch (error) {
+    console.error('Error updating views:', error);
+    res.status(500).json({ error: 'Internal server error.' });
+  }
+});
+
 app.delete("/article/:id", async (req, res) => {
   const { id } = req.params;
   const { _id } = req.body;

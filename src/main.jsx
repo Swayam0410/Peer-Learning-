@@ -1,4 +1,5 @@
 import { StrictMode } from 'react'
+import { Provider } from './components/ui/provider'
 import { createRoot } from 'react-dom/client'
 import './index.css'
 import App from './App.jsx'
@@ -9,10 +10,12 @@ const publishableKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 console.log("🔐 Clerk key:", publishableKey); 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
+    
     <ClerkProvider publishableKey={publishableKey}>
       <BrowserRouter>
         <App />
       </BrowserRouter>
     </ClerkProvider>
+  
   </StrictMode>
 );

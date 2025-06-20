@@ -1,28 +1,25 @@
 import { useNavigate } from "react-router-dom";
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Trash2, Eye, ArrowBigUp } from 'lucide-react';
 import { useUser } from "@clerk/clerk-react";
 import { useEffect, useState } from "react";
 import ConfirmDialog from "./ConfirmDialog";
-import { ArrowBigUp } from "lucide-react";
 
-
-const SessionCard = ({ onClick,topic, sem, name, subject, _id, email,upvotes }) => {
-  const [hasUpvoted,setHasUpvoted]=useState(false);
-  const [upvotesCount,setUpvotesCount]=useState(upvotes.length);
-  const [upvotesArr,setUpvotesArr]=useState(upvotes);
+const SessionCard = ({ onClick, topic, sem, name, subject, _id, email, upvotes, viewed = [] }) => {
+  const [hasUpvoted, setHasUpvoted] = useState(false);
+  const [upvotesCount, setUpvotesCount] = useState(upvotes.length);
+  const [upvotesArr, setUpvotesArr] = useState(upvotes);
   const [showDialog, setShowDialog] = useState(false);
   const { user } = useUser();
   const [loggedInEmail, setLoggedInEmail] = useState("");
-  const navigate = useNavigate();
+  const navigate=useNavigate();
 
   useEffect(() => {
-    console.log(200);
     if (user?.emailAddresses?.length > 0) {
       setLoggedInEmail(user.emailAddresses[0].emailAddress);
     }
   }, [user]);
 
-  const handleClick = async (e) => {
+  const handleDelete = async (e) => {
     e.stopPropagation();
     e.preventDefault();
     try {
@@ -40,102 +37,104 @@ const SessionCard = ({ onClick,topic, sem, name, subject, _id, email,upvotes }) 
     }
   };
 
-  const editHandle = (e) => {
+  const handleEdit = (e) => {
     e.preventDefault();
     e.stopPropagation();
     navigate(`/edit/${_id}`);
   };
 
-  const handleUpotes=async (e)=>{
-
+  const handleUpvotes = async (e) => {
     e.stopPropagation();
+    const res = await fetch("http://localhost:3000", {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userEmail: loggedInEmail, id: _id }),
+    });
 
-  const res = await fetch("http://localhost:3000", {
-    method: "PATCH",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userEmail: loggedInEmail ,id:_id}),
-  });
-
-  const data = await res.json();
-  if (res.ok) {
-    setUpvotesArr(data.upvotes);
-    setHasUpvoted(data.upvoted);
-    setUpvotesCount(data.count);
-  }
-  }
+    const data = await res.json();
+    if (res.ok) {
+      setUpvotesArr(data.upvotes);
+      setHasUpvoted(data.upvoted);
+      setUpvotesCount(data.count);
+    }
+  };
 
   return (
-   <div onClick={onClick}
-  className="relative bg-gradient-to-br from-cyan-700 to-cyan-900 text-white rounded-2xl shadow-xl p-6 w-full max-w-md hover:scale-[1.02] transition-transform duration-300 ease-in-out cursor-pointer"
->
-  {/* 🔼 Upvote Button Positioned at Top-Right */}
-   <button
-    className={`flex items-center gap-1 text-sm px-3 py-1 rounded-full border font-semibold shadow transition-all
-      ${upvotesArr.includes(loggedInEmail)
-        ? 'bg-yellow-400 text-yellow-900 border-yellow-500 scale-105 shadow-lg'
-        : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}
-    `}
-    onClick={handleUpotes}
-  >
-    
-    <ArrowBigUp
-      size={20}
-      className={`transition-transform ${
-        hasUpvoted ? 'fill-yellow-700 text-yellow-700' : 'text-gray-500'
-      }`}
-    /> 
-    {upvotesCount}
-  </button>
-
-  <h2 className="text-2xl font-bold mb-2 tracking-wide">📌 {topic}</h2>
-  <p className="text-sm mb-1">🎓 <span className="font-semibold">Semester:</span> {sem}</p>
-  <p className="text-sm mb-1">📘 <span className="font-semibold">Subject:</span> {subject}</p>
-  <p className="text-sm mb-4">🙋‍♂️ <span className="font-semibold">Contributed by:</span> {name}</p>
-
-  <div className="flex flex-wrap gap-3 justify-center items-center">
-    {loggedInEmail === email && (
-      <button
-        onClick={(e) => {
-          e.stopPropagation();
-          setShowDialog(true);
-        }}
-        className="flex items-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all"
-      >
-        <Trash2 size={18} />
-        Delete
-      </button>
-    )}
-
-    <button
+    <div
       onClick={onClick}
-      className="px-4 py-2 bg-white text-cyan-800 rounded-full font-semibold border border-cyan-300 hover:bg-cyan-100 transition-all"
+      className="relative bg-gradient-to-br from-cyan-700 to-cyan-900 text-white rounded-2xl shadow-xl p-6 w-full max-w-md hover:scale-[1.02] transition-transform duration-300 ease-in-out cursor-pointer"
     >
-      👁️ View
-    </button>
-
-    {loggedInEmail === email && (
+      {/* Upvote Button */}
       <button
-        onClick={editHandle}
-        className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all"
+        className={`absolute top-3 right-3 flex items-center gap-1 text-sm px-3 py-1 rounded-full border font-semibold shadow transition-all
+          ${upvotesArr.includes(loggedInEmail)
+            ? 'bg-yellow-400 text-yellow-900 border-yellow-500 scale-105 shadow-lg'
+            : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}
+        `}
+        onClick={handleUpvotes}
       >
-        <Pencil size={18} />
-        Edit
+        <ArrowBigUp
+          size={20}
+          className={`transition-transform ${
+            hasUpvoted ? 'fill-yellow-700 text-yellow-700' : 'text-gray-500'
+          }`}
+        />
+        {upvotesCount}
       </button>
-    )}
 
-    <ConfirmDialog
-      open={showDialog}
-      onOpenChange={setShowDialog}
-      onConfirm={handleClick}
-      onCancel={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setShowDialog(false)
-      }}
-    />
-  </div>
-</div>
+      {/* View Count Display */}
+      <div className="absolute top-3 left-3 flex items-center gap-1 text-sm px-3 py-1 rounded-full bg-white text-gray-600 border border-gray-300 shadow">
+        {viewed.length} <p>views</p>
+      </div>
 
+      <h2 className="text-2xl font-bold mb-2 tracking-wide">📌 {topic}</h2>
+      <p className="text-sm mb-1">🎓 <span className="font-semibold">Semester:</span> {sem}</p>
+      <p className="text-sm mb-1">📘 <span className="font-semibold">Subject:</span> {subject}</p>
+      <p className="text-sm mb-4">🙋‍♂️ <span className="font-semibold">Contributed by:</span> {name}</p>
+
+      <div className="flex flex-wrap gap-3 justify-center items-center">
+        {loggedInEmail === email && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              setShowDialog(true);
+            }}
+            className="flex items-center gap-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-full transition-all"
+          >
+            <Trash2 size={18} />
+            Delete
+          </button>
+        )}
+
+        <button
+          onClick={onClick}
+          className="px-4 py-2 bg-white text-cyan-800 rounded-full font-semibold border border-cyan-300 hover:bg-cyan-100 transition-all"
+        >
+          👁️View
+        </button>
+
+        {loggedInEmail === email && (
+          <button
+            onClick={handleEdit}
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full transition-all"
+          >
+            <Pencil size={18} />
+            Edit
+          </button>
+        )}
+
+        <ConfirmDialog
+          open={showDialog}
+          onOpenChange={setShowDialog}
+          onConfirm={handleDelete}
+          onCancel={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            setShowDialog(false);
+          }}
+        />
+      </div>
+    </div>
   );
 };
 

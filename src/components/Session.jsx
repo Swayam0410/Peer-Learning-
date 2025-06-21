@@ -81,6 +81,10 @@ const handleSearch=(e)=>{
 //     onClick={() => navigate("/leaderboard")}
 //     className="px-4 py-2 bg-yellow-400 text-yellow-900 font-semibold rounded-full shadow hover:bg-yellow-500 transition-all"
 
+ const handleChange = (e) => {
+    const value = e.target.value;
+    if (value) navigate(value);
+  };
  const addClick=async({_id,email})=>{
   try {
     const res=await fetch("http://localhost:3000/addview",{
@@ -104,49 +108,27 @@ const handleSearch=(e)=>{
   <div>
     <Filter filters={filters} setFilters={setFilters} />
   </div>
-<div>
-  <Menu shadow="lg" width={220} position="bottom-end" withArrow >
-    <Menu.Target>
-     <Button
-  variant="filled"
-  color="cyan"
-  radius="xl"
-  className="shadow-lg flex items-center gap-2"
->
-  Filter Posts &nbsp;<ArrowDown size={16} />
-</Button>
-
-    </Menu.Target>
-
-    <Menu.Dropdown >
-      <Menu.Item
-        leftSection={<Star size={16} />}
-        onClick={()=>navigate("/highlyrated")}
+ <div className="relative inline-block">
+      <label htmlFor="filter" className="sr-only">Filter Posts</label>
+      <select
+        id="filter"
+        onChange={handleChange}
+        className="appearance-none bg-cyan-100 text-black font-medium px-4 py-2 pr-10 rounded-xl shadow-lg focus:outline-none focus:ring-2 focus:ring-cyan-400"
+        defaultValue=""
       >
-        ⭐ Highly Rated
-      </Menu.Item>
+        <option value="" disabled>Filter Posts</option>
+        <option value="/highlyrated">⭐ Highly Rated</option>
+        <option value="/mostviews">👀 Most Viewed</option>
+        <option value="/new">🔥 Newest First</option>
+      </select>
 
-      <Menu.Item
-        leftSection={<Eye size={16} />}
-        onClick={() => {
-          navigate("/mostviews")
-        }}
-      >
-        👀 Most Viewed
-      </Menu.Item>
-
-      <Menu.Item
-        leftSection={<Flame size={16} />}
-        onClick={() => {
-         navigate("/new");
-        }}
-        color="red"
-      >
-        🔥 Newest First
-      </Menu.Item>
-    </Menu.Dropdown>
-  </Menu>
-</div>
+      {/* Custom dropdown arrow */}
+      <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-black">
+        <svg className="w-4 h-4" viewBox="0 0 20 20" fill="currentColor">
+          <path d="M7 7l3 3 3-3" />
+        </svg>
+      </div>
+    </div>
   {/* Leaderboard Button */}
 
 <div className="w-full max-w-md mx-auto mt-4 px-4">

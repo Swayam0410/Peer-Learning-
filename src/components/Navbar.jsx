@@ -39,7 +39,7 @@ const Navbar = () => {
             className="h-8"
             alt="Logo"
           />
-          <span className="text-2xl font-semibold text-white">Flowbite</span>
+          <span className="text-2xl font-semibold text-white">Peerly</span>
         </div>
 
         {/* Right Actions (Mobile menu + Profile dropdown) */}

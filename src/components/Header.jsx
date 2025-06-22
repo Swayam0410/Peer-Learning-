@@ -1,20 +1,16 @@
 import { useNavigate } from "react-router-dom";
-import { useUser } from "@clerk/clerk-react";
+
 import { UserCircle2 } from "lucide-react";
-import { useState } from "react";
+
 import Navbar from "./Navbar";
 
 const Header = () => {
   const navigate = useNavigate();
-  const { user } = useUser();
-  const [showMenu, setShowMenu] = useState(false);
+
 
   const handleClick = () => navigate("/form");
 
-  const fullName = user?.fullName || "Anonymous";
-  const email = user?.primaryEmailAddress?.emailAddress || "Not Provided";
-  const phone = user?.phoneNumbers?.[0]?.phoneNumber || "Not Provided";
-  const username = user?.username || "";
+
 
   return (
   <header className="w-full bg-white dark:bg-gray-900 py-10 px-4 relative">
@@ -26,7 +22,7 @@ const Header = () => {
       Welcome to <span className="text-blue-600">Peer Learning Platform</span>
     </h1>
 
-    <p className="max-w-2xl text-gray-600 text-base sm:text-lg font-normal leading-relaxed">
+    <p className="max-w-2xl text-gray-200 text-base sm:text-lg font-normal leading-relaxed">
       Share your expertise with peers by contributing to a growing collection of student-led sessions and topic explanations.
     </p>
 

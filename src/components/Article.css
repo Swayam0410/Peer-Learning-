@@ -25,3 +25,7 @@ p{
     justify-content: center;
     align-content: center;
 }
+.bgCol{
+    background-color: #3a6186;
+    color: white !important;
+}

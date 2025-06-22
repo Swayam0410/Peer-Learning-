@@ -1,36 +1,92 @@
-import { useLocation, useNavigate} from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { useEffect, useState } from "react"; 
-import { User } from "lucide-react";
 import CommentSection from "./Comments";
 import { useUser } from "@clerk/clerk-react";
 
+
 const Article = () => {
+  const publishableKey = import.meta.env.VITE_MURF_API_KEY;
   const [loggedInEmail, setLoggedInEmail] = useState("");
-  const user=useUser();
-  const navigate=useNavigate();
+  const [audioUrl, setAudioUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  const user = useUser();
+  const navigate = useNavigate();
   const location = useLocation();
-  const  entry  = location.state.entry || location.state.post ||{}
+  const entry = location.state.entry || location.state.post || {};
 
+  const [comments, setComments] = useState(entry.comments);
 
-  const [comments,setComments]=useState(entry.comments);
+  // 🧠 Summarize and then call generateAudio
+  const summarizeContent = async () => {
+    try {
+      setIsLoading(true);
+      const res = await fetch("http://localhost:3000/generatesummary", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          description: entry.description,
+          topic: entry.topic,
+          subject: entry.subject
+        }),
+      });
+
+      const data = await res.json();
+      console.log("Summary:", data.summary);
+      await generateAudio(data.summary);
+    } catch (error) {
+      console.error("Summary Error:", error);
+    }
+  };
+
+  // 🔊 Call Murf API
+  const generateAudio = async (text) => {
+    setAudioUrl("");
+    try {
+      const response = await fetch("https://api.murf.ai/v1/speech/generate", {
+        method: "POST",
+        headers: {
+          "api-key": publishableKey,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: text,
+          voiceId: "en-US-terrell",
+        }),
+      });
+
+      if (!response.ok) {
+        const errText = await response.text();
+        console.error("Murf Error:", errText);
+        return;
+      }
+
+      const data = await response.json();
+      console.log("Audio response:", data);
+      setAudioUrl(data.audioFile);
+    } catch (error) {
+      console.error("Audio generation failed:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    console.log(user.user.emailAddresses[0].emailAddress);
-  setLoggedInEmail(String(user.user.emailAddresses[0].emailAddress));
-   
+    if (user.user) {
+      const email = user.user.emailAddresses[0].emailAddress;
+      setLoggedInEmail(email);
+    }
   }, [user]);
-  if (!entry) return <div className="text-center mt-10 text-red-500">No data found.</div>;
+
+  if (!entry) {
+    return (
+      <div className="text-center mt-10 text-red-500">No data found.</div>
+    );
+  }
 
   return (
-    <div className="min-h-screen px-6 py-8 md:px-20 bg-gray-50">
-      {/* <button
-        onClick={() => navigate("/")}
-        className="mb-6 flex items-center gap-2 text-blue-600 hover:underline"
-      >
-        <ArrowLeft className="w-5 h-5" />
-        Back to Home
-      </button> */}
-
+    <div className="min-h-screen px-6 py-8 md:px-20 bgCol">
       <div className="bg-white shadow-xl rounded-2xl p-8 space-y-8">
         <div className="text-center space-y-2">
           <h1 className="text-4xl font-bold text-gray-800">{entry.topic}</h1>
@@ -41,14 +97,38 @@ const Article = () => {
           </div>
         </div>
 
-      <div
-  className="prose max-w-none text-lg leading-relaxed text-gray-700 mx-auto"
-  dangerouslySetInnerHTML={{ __html: entry.description }}
-/>
-   {entry.email===loggedInEmail && <button onClick={()=>navigate(`/edit/${entry._id}`)} className="text-black border-blur-300 border-4 bg-blue-400">Edit Content</button>}
-      </div>
-      <CommentSection initialComments={comments} sessionemail={entry.email}/>
+        <div
+          className="prose max-w-none text-lg leading-relaxed text-gray-700 mx-auto"
+          dangerouslySetInnerHTML={{ __html: entry.description }}
+        />
 
+        {entry.email === loggedInEmail && (
+          <button
+            onClick={() => navigate(`/edit/${entry._id}`)}
+            className="text-black border-blur-300 border-4 bg-blue-400"
+          >
+            Edit Content
+          </button>
+        )}
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={summarizeContent}
+            className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-xl font-semibold"
+            disabled={isLoading}
+          >
+            {isLoading ? "🔄 Generating Audio..." : "🔊 Generate an AI summarized Audio"}
+          </button>
+
+          {audioUrl && !isLoading && (
+            <div className="mt-4">
+              <audio controls src={audioUrl} className="w-full" />
+            </div>
+          )}
+        </div>
+      </div>
+
+      <CommentSection initialComments={comments} sessionemail={entry.email} />
     </div>
   );
 };

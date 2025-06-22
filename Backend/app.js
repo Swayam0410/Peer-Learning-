@@ -263,6 +263,33 @@ res.json(withNames);
   }
 });
 
+app.post("/generatesummary", async (req, res) => {
+  try {
+    const { description, topic, subject } = req.body;
+
+    const model = genAI.getGenerativeModel({ model: "models/gemini-1.5-flash" });
+
+    const result = await model.generateContent(
+      `You have to create a summary of the following learning content. 
+       The summary will be converted to audio, so keep it clear and under 2900 words. 
+       Topic: ${topic}
+       Subject: ${subject}
+       Content: ${description}`
+    );
+
+    const response = await result.response;
+    const summary = response.text();
+
+    res.json({ summary });
+  } catch (error) {
+    console.error("Error summarizing content:", error.message);
+    res.status(500).json({ error: "Failed to summarize content." });
+  }
+});
+
+
+
+
 app.post("/analyze", async (req, res) => {
   try {
     // You typically don't need to call listModels() here.

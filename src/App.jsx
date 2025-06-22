@@ -6,13 +6,15 @@ import Form from './components/Form.jsx';
 import { useEffect, useState } from 'react';
 import EditForm from './components/EditForm.jsx';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Contact } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import IndividualPerformance from "./components/IndividualPerformance.jsx"
 import { Toaster } from "react-hot-toast";
 import HighlyRated from "./components/HighlyRated"
 import MostViews from './components/MostViews';
 import Newest from './components/Newest';
+import Navbar from './components/Navbar';
+import ContactPage from './components/Contact';
 import {
   SignIn,
   SignUp,
@@ -121,7 +123,7 @@ function App() {
   
   <DataContext.Provider value={[data, setData]}>
     <Toaster position="top-right" />
-  <div className="max-w-7xl mx-auto px-4 py-6">
+  <div className="max-w-screen-xl mx-auto px-2 sm:px-4 py-6">
     <SignedIn>
       <div className="flex justify-end mb-4">
         <UserButton afterSignOutUrl="/sign-in" />
@@ -131,6 +133,7 @@ function App() {
     <SignedOut>
       <RedirectToSignIn />
     </SignedOut>
+    <Navbar/>
 {currentPath !== "/" && (
   <>
     {/* Fixed Back button */}
@@ -166,8 +169,10 @@ function App() {
       <Route path='/leaderboard' element={<LeaderBoard/>}/>
       <Route path='/performance/:email' element={<IndividualPerformance/>}/>
       <Route path='/highlyrated' element={<HighlyRated/>}/>
+    
       <Route path='/mostviews' element={<MostViews/>}/>
       <Route path='/new' element={<Newest/>}/>
+       <Route path='/contact' element={<ContactPage/>}/>
     </Routes>
   </div>
 </DataContext.Provider>

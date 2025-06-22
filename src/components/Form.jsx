@@ -106,10 +106,11 @@ const handleAnalyze = async () => {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex items-center justify-center px-4">
+    <div className="min-h-screen bg-[#101828] flex items-center justify-center px-4 sm:px-6 lg:px-16 py-12">
+
       <form
         onSubmit={handleSubmit}
-className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-lg sm:w-11/12 md:w-5/6 lg:w-3/4 xl:w-3/4 2xl:w-2/3 flex flex-col gap-6"
+className="bg-white shadow-xl rounded-2xl p-8 sm:p-10 w-full max-w-4xl flex flex-col gap-6"
 
       >
         <h2 className="text-2xl font-light text-center text-black">
@@ -184,13 +185,13 @@ className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-l
 <button
   type="button"
   onClick={handleAnalyze}
-  className="mt-3 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 "
+  className="mt-3 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-700 "
 >
   Analyze with AI 🤖
 </button>
 
 {loading && (
-  <div className="text-blue-700 font-medium mt-2 animate-pulse">
+  <div className="text-blue-500 font-medium mt-2 animate-pulse">
     🤖 Generating suggestions...
   </div>
 )}
@@ -212,8 +213,7 @@ className="min-h-[80vh] bg-white shadow-md rounded-2xl p-8 w-full max-w-screen-l
 
         <button
           type="submit"
-          className="bg-blue-800 text-white font-medium rounded-xl mt-4 p-2 w-36 mx-auto disabled:bg-blue-400 disabled:cursor-not-allowed"
-        >
+className="bg-blue-500 hover:bg-blue-800 text-white font-semibold py-3 px-6 rounded-xl transition"        >
           🚀 Submit
         </button>
       </form>

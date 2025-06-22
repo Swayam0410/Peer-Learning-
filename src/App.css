@@ -1,15 +1,15 @@
 @import "tailwindcss";
 
 #root {
-  width: 90%;
-  margin: 0 auto;
+  width: 120%;
+  margin:auto;
   text-align: center;
 }
 
 /* Optional: center user content vertically */
 html, body, #root {
   min-height: 100%;
-  background-color: #f9fafb; /* Tailwind’s gray-50 */
+  background-color: #101828; /* Tailwind’s gray-50 */
 }
 
 /* Optional: Spinner animation if needed */

@@ -13,6 +13,9 @@ const CommentSection = ({ initialComments ,sessionemail }) => {
 
   const [comments, setComments] = useState(initialComments || []);
   const [newComment, setNewComment] = useState("");
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+const [commentToDelete, setCommentToDelete] = useState(null);
+
   const [visibleNameId, setVisibleNameId] = useState(null);
 
   const addComment = async () => {
@@ -44,25 +47,26 @@ const CommentSection = ({ initialComments ,sessionemail }) => {
     }
   };
 
-  const handleDelete = async (_id) => {
-    try {
-      const res = await fetch(`http://localhost:3000/article/${id}`, {
-        method: "DELETE",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ _id }),
-      });
+const handleDelete = async () => {
+  try {
+    const res = await fetch(`http://localhost:3000/article/${id}`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ _id: commentToDelete }),
+    });
 
-      if (!res.ok) throw new Error("Failed to delete comment");
+    if (!res.ok) throw new Error("Failed to delete comment");
 
-      const updated = await res.json();
-      setComments(updated.comments);
-    } catch (err) {
-      console.error("Error deleting comment:", err);
-      alert("Failed to delete comment. Please try again.");
-    }
-  };
+    const updated = await res.json();
+    setComments(updated.comments);
+    setShowConfirmModal(false);
+    setCommentToDelete(null);
+  } catch (err) {
+    console.error("Error deleting comment:", err);
+    alert("Failed to delete comment. Please try again.");
+  }
+};
+
 
   return (
     <div className="mt-10 bg-white shadow-md p-6 rounded-xl space-y-6">
@@ -107,12 +111,15 @@ const CommentSection = ({ initialComments ,sessionemail }) => {
               </div>
 
           {(comm.poster_email === email || email === sessionemail) && (
-  <button
-    className="text-red-500 hover:underline ml-auto"
-    onClick={() => handleDelete(comm._id)}
-  >
-    Delete
-  </button>
+<button
+  className="text-red-500 hover:underline ml-auto"
+  onClick={() => {
+    setShowConfirmModal(true);
+    setCommentToDelete(comm._id);
+  }}
+>
+  Delete
+</button>
 )}
 
             </li>
@@ -137,6 +144,32 @@ const CommentSection = ({ initialComments ,sessionemail }) => {
           Comment
         </button>
       </div>
+      {showConfirmModal && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex justify-center items-center">
+    <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm w-full">
+      <h2 className="text-lg font-semibold text-gray-800 mb-4">Confirm Deletion</h2>
+      <p className="text-gray-600 mb-6">Are you sure you want to delete this comment? This action cannot be undone.</p>
+      <div className="flex justify-end gap-4">
+        <button
+          className="bg-gray-200 px-4 py-2 rounded hover:bg-gray-300 text-gray-800"
+          onClick={() => {
+            setShowConfirmModal(false);
+            setCommentToDelete(null);
+          }}
+        >
+          Cancel
+        </button>
+        <button
+          className="bg-red-600 px-4 py-2 rounded hover:bg-red-700 text-white"
+          onClick={handleDelete}
+        >
+          Delete
+        </button>
+      </div>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };

@@ -24,9 +24,14 @@ const LeaderBoard=()=>{
 return (
   <div className="min-h-screen px-6 py-10 bg-gray-50">
     <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-8">
-      <h2 className="text-3xl font-bold text-center text-indigo-600 mb-8">
-        🏆 Leaderboard
-      </h2>
+      <div className="text-center mb-8">
+        <h1 className="text-3xl font-bold text-yellow-500 drop-shadow-md">
+          🏆 Leaderboard
+        </h1>
+        <p className="text-gray-600 mt-2 text-lg">
+          Top sessions with the most upvotes from learners!
+        </p>
+      </div>
 
       {data.length===0 ? (
         <p className="text-center text-gray-500">Loading leaderboard...</p>

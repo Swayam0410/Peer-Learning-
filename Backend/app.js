@@ -14,10 +14,10 @@ dotenv.config();
 const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
 const app=express();
-const port=3000;
+const port=process.env.PORT || 3000;
 app.use(express.json());
 app.use(cors({
-  origin: "http://localhost:5173",
+  origin: `${process.env.FRONTEND_URL}`,
   methods: ["GET","POST","OPTIONS","DELETE","PATCH","PUT"],
   allowedHeaders: ["Content-Type"]
 }));
